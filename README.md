@@ -212,6 +212,24 @@ https://github.com/JoeSparkx/WindowsXIV-Authenticator
 
 Copyright (c) 2026 JSS Software
 
+## Other JSS Software projects
+
+### XIV Mods
+
+**XIV Mods** is a curated catalogue of Final Fantasy XIV Dalamud plugins, repositories, guides and community resources.
+
+https://xivmods.com
+
+Discord:
+
+https://discord.xivmods.com
+
+GitHub:
+
+https://github.com/JoeSparkx
+
+XIV Mods is a separate community project and is not required to use Windows XIV Authenticator.
+
 ## Attribution
 
 This project was originally created by Adam Crickett / JSS Software.
