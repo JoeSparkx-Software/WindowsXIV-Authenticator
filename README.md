@@ -3,7 +3,7 @@
 A lightweight Windows authenticator for Final Fantasy XIV and XIVLauncher.
 [**Setup Guide**](docs/SETUP.md)
 
-Built by **JSS Software**.
+Built by **JSS Software** https://xivmods.com
 
 Windows XIV Authenticator stores your FFXIV TOTP secret locally, generates the same 6-digit OTP codes as standard authenticator apps, and can send the current OTP directly to XIVLauncher.
 
