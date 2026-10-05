@@ -1,0 +1,2 @@
+f703c16261f564cfb6ce328f330122a8aed82cba1ee145956c98364e87f9a189  WindowsXIVAuthenticator-Setup-0.1.0.exe
+9684be9105be0474b63cc6d8cefc41330a8dda0f9fbb56ecac139ef71ea4a882  WindowsXIVAuthenticator-Portable-0.1.0.zip

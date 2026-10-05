@@ -1,0 +1,49 @@
+<Window x:Class="WindowsXIVAuthenticator.GoogleImportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Import from Google Authenticator"
+        Height="420"
+        Width="560"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Text="Select an authenticator account to import"
+            FontSize="20"
+            FontWeight="SemiBold"
+            Margin="0,0,0,16"/>
+
+        <ListBox
+            x:Name="AccountsListBox"
+            Grid.Row="1"
+            DisplayMemberPath="DisplayName"/>
+
+        <StackPanel
+            Grid.Row="2"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            Margin="0,16,0,0">
+
+            <Button
+                Content="Cancel"
+                Width="90"
+                Height="34"
+                Margin="0,0,10,0"
+                Click="Cancel_Click"/>
+
+            <Button
+                Content="Import"
+                Width="90"
+                Height="34"
+                IsDefault="True"
+                Click="Import_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
