@@ -13,4 +13,6 @@ public static class AppConstants
 
     public const string GitHubLatestReleaseApiUrl =
         "https://api.github.com/repos/JoeSparkx/WindowsXIV-Authenticator/releases/latest";
+
+    public const string XivModsUrl = "https://xivmods.com/";
 }

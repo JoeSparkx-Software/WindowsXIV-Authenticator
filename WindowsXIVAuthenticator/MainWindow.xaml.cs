@@ -4,6 +4,34 @@ namespace WindowsXIVAuthenticator;
 
 public partial class MainWindow : Window
 {
+    private async Task<bool> EnsureAuthenticatorUnlockedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(_activeSecret))
+            return true;
+
+        if (!AuthenticatorStore.Exists())
+            return false;
+
+        if (AppSettingsService.GetRequireWindowsHello())
+        {
+            var verified = await WindowsHelloService.VerifyAsync(
+                "Unlock Windows XIV Authenticator");
+
+            if (!verified)
+                return false;
+        }
+
+        var secret = AuthenticatorStore.GetSecret();
+
+        if (string.IsNullOrWhiteSpace(secret))
+            return false;
+
+        _activeSecret = secret;
+
+        RefreshOtpDisplay();
+
+        return true;
+    }
     private string? _activeSecret;
     private readonly DispatcherTimer _otpTimer;
 
@@ -27,10 +55,20 @@ public partial class MainWindow : Window
         object sender,
         RequestNavigateEventArgs e)
     {
-        if (!string.Equals(
-                e.Uri.AbsoluteUri,
+        var url = e.Uri.AbsoluteUri;
+
+        var isAllowed =
+            string.Equals(
+                url,
                 AppConstants.GitHubRepositoryUrl,
-                StringComparison.OrdinalIgnoreCase))
+                StringComparison.OrdinalIgnoreCase)
+            ||
+            string.Equals(
+                url,
+                AppConstants.XivModsUrl,
+                StringComparison.OrdinalIgnoreCase);
+
+        if (!isAllowed)
         {
             MessageBox.Show(
                 "This link is not permitted.",
@@ -44,31 +82,24 @@ public partial class MainWindow : Window
 
         Process.Start(new ProcessStartInfo
         {
-            FileName = AppConstants.GitHubRepositoryUrl,
+            FileName = url,
             UseShellExecute = true
         });
 
         e.Handled = true;
     }
-
     private async void SendToLauncher_Click(
         object sender,
         RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(_activeSecret))
+        if (!await EnsureAuthenticatorUnlockedAsync())
         {
-            MessageBox.Show(
-                "No authenticator account is loaded.",
-                "No OTP available",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
-
             return;
         }
 
         try
         {
-            var otp = TotpService.GenerateCode(_activeSecret);
+            var otp = TotpService.GenerateCode(_activeSecret!);
 
             await XivLauncherService.SendOtpAsync(otp);
 
@@ -102,23 +133,16 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(_activeSecret))
-        {
-            MessageBox.Show(
-                "No authenticator account is loaded.",
-                "No OTP available",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
-
+        if (!await EnsureAuthenticatorUnlockedAsync())
             return;
-        }
 
         try
         {
             var otp =
-                TotpService.GenerateCode(_activeSecret);
+                TotpService.GenerateCode(_activeSecret!);
 
-            await XivLauncherService.LaunchAndSendOtpAsync(otp);
+                await XivLauncherService.LaunchAndSendOtpAsync(
+                () => TotpService.GenerateCode(_activeSecret!));
 
             MessageBox.Show(
                 "XIVLauncher started and OTP sent.",
@@ -152,6 +176,19 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void TestWindowsHello_Click(object sender, RoutedEventArgs e)
+    {
+        var verified = await WindowsHelloService.VerifyAsync(
+            "Verify your identity to test Windows Hello");
+
+        MessageBox.Show(
+            verified
+                ? "Windows Hello verification successful."
+                : "Windows Hello verification failed or was cancelled.",
+            "Windows Hello Test",
+            MessageBoxButton.OK,
+            verified ? MessageBoxImage.Information : MessageBoxImage.Warning);
+    }
     private void UpdateCountdownVisual(int remaining)
     {
         CountdownTextBlock.Text = remaining.ToString();
@@ -273,24 +310,34 @@ public partial class MainWindow : Window
             if (!AuthenticatorStore.Exists())
                 return;
 
-            var stored =
-                AuthenticatorStore.Load();
+            var stored = AuthenticatorStore.Load();
 
-            var secret =
-                AuthenticatorStore.GetSecret();
-
-            if (stored is null ||
-                string.IsNullOrWhiteSpace(secret))
-            {
+            if (stored is null)
                 return;
-            }
-
-            _activeSecret = secret;
 
             SecretTextBox.Text = "";
 
             Title =
                 $"Windows XIV Authenticator — {stored.DisplayName}";
+
+            if (AppSettingsService.GetRequireWindowsHello())
+            {
+                _activeSecret = null;
+
+                OtpTextBlock.Text = "------";
+                RemainingTextBlock.Text = "Windows Hello required";
+                CountdownTextBlock.Text = "";
+                CountdownPath.Data = null;
+
+                return;
+            }
+
+            var secret = AuthenticatorStore.GetSecret();
+
+            if (string.IsNullOrWhiteSpace(secret))
+                return;
+
+            _activeSecret = secret;
 
             RefreshOtpDisplay();
         }
@@ -304,7 +351,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void GenerateOtp_Click(
+    private async void GenerateOtp_Click(
         object sender,
         RoutedEventArgs e)
     {
@@ -312,6 +359,11 @@ public partial class MainWindow : Window
         {
             var enteredSecret =
                 SecretTextBox.Text.Trim();
+                if (string.IsNullOrWhiteSpace(enteredSecret) &&
+                !await EnsureAuthenticatorUnlockedAsync())
+            {
+                return;
+            }
 
             var secret =
                 !string.IsNullOrWhiteSpace(enteredSecret)

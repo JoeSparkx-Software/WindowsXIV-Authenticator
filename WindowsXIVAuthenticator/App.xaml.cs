@@ -38,7 +38,15 @@ public partial class App : Application
 
                 return;
             }
+            if (AppSettingsService.GetRequireWindowsHello())
+            {
+                var verified =
+                    await WindowsHelloService.VerifyAsync(
+                        "Verify your identity to launch Final Fantasy XIV");
 
+                if (!verified)
+                    return;
+            }
             var secret =
                 AuthenticatorStore.GetSecret();
 
@@ -54,10 +62,10 @@ public partial class App : Application
             }
 
             var otp =
-                TotpService.GenerateCode(secret);
+                TotpService.GenerateCode(secret!);
 
-            await XivLauncherService
-                .LaunchAndSendOtpAsync(otp);
+            await XivLauncherService.LaunchAndSendOtpAsync(
+                () => TotpService.GenerateCode(secret));
         }
         catch (FileNotFoundException)
         {

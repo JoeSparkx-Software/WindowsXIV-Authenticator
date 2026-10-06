@@ -81,8 +81,11 @@ public static class XivLauncherService
         return false;
     }
 
-    public static async Task LaunchAndSendOtpAsync(string otp)
+    public static async Task LaunchAndSendOtpAsync(
+        Func<string> otpFactory)
     {
+        ArgumentNullException.ThrowIfNull(otpFactory);
+
         StartLauncher();
 
         var listenerReady =
@@ -94,6 +97,8 @@ public static class XivLauncherService
             throw new TimeoutException(
                 "XIVLauncher started, but its OTP listener did not become available.");
         }
+
+        var otp = otpFactory();
 
         await SendOtpAsync(otp);
     }

@@ -9,6 +9,27 @@ public partial class SettingsWindow : Window
         InitializeComponent();
 
         LoadCurrentPath();
+        LoadWindowsHelloSetting();
+    }
+
+    private void LoadWindowsHelloSetting()
+    {
+        RequireWindowsHelloCheckBox.IsChecked =
+            AppSettingsService.GetRequireWindowsHello();
+    }
+
+    private void RequireWindowsHello_Checked(
+        object sender,
+        RoutedEventArgs e)
+    {
+        AppSettingsService.SetRequireWindowsHello(true);
+    }
+
+    private void RequireWindowsHello_Unchecked(
+        object sender,
+        RoutedEventArgs e)
+    {
+        AppSettingsService.SetRequireWindowsHello(false);
     }
 
     private void LoadCurrentPath()

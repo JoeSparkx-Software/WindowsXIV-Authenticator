@@ -15,3 +15,4 @@ global using System.Windows.Media;
 global using System.Diagnostics;
 global using System.Net.Sockets;
 global using System.Windows.Navigation;
+global using WindowsXIVAuthenticator.Services;
