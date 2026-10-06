@@ -1,5 +1,11 @@
 # Windows XIV Authenticator
-
+<p align="center">
+  <img
+    src="https://github.com/JoeSparkx-Software/WindowsXIV-Authenticator/blob/main/WindowsXIVAuthenticator/assets/JSSAuthenticatorpic.png?raw=true"
+    alt="Windows XIV Authenticator"
+    width="420"
+  />
+</p>
 A lightweight Windows authenticator for Final Fantasy XIV and XIVLauncher.
 [**Setup Guide**](docs/SETUP.md)
 
