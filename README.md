@@ -7,7 +7,6 @@
   />
 </p>
 A lightweight Windows authenticator for Final Fantasy XIV and XIVLauncher.
-[**Setup Guide**](docs/SETUP.md)
 
 Built by **JSS Software** https://xivmods.com
 
