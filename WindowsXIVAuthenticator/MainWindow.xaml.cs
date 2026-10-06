@@ -4,40 +4,14 @@ namespace WindowsXIVAuthenticator;
 
 public partial class MainWindow : Window
 {
-    private async Task<bool> EnsureAuthenticatorUnlockedAsync()
-    {
-        if (!string.IsNullOrWhiteSpace(_activeSecret))
-            return true;
-
-        if (!AuthenticatorStore.Exists())
-            return false;
-
-        if (AppSettingsService.GetRequireWindowsHello())
-        {
-            var verified = await WindowsHelloService.VerifyAsync(
-                "Unlock Windows XIV Authenticator");
-
-            if (!verified)
-                return false;
-        }
-
-        var secret = AuthenticatorStore.GetSecret();
-
-        if (string.IsNullOrWhiteSpace(secret))
-            return false;
-
-        _activeSecret = secret;
-
-        RefreshOtpDisplay();
-
-        return true;
-    }
     private string? _activeSecret;
     private readonly DispatcherTimer _otpTimer;
 
     public MainWindow()
     {
         InitializeComponent();
+
+        Loaded += MainWindow_Loaded;
 
         _otpTimer = new DispatcherTimer
         {
@@ -51,11 +25,80 @@ public partial class MainWindow : Window
         _otpTimer.Start();
     }
 
+    private async void MainWindow_Loaded(
+        object sender,
+        RoutedEventArgs e)
+    {
+        Loaded -= MainWindow_Loaded;
+
+        var result =
+            await UpdateService.CheckForUpdateAsync();
+
+        if (result is null ||
+            !result.UpdateAvailable)
+        {
+            return;
+        }
+
+        var openRelease =
+            MessageBox.Show(
+                $"Windows XIV Authenticator {result.LatestVersion} is available.\n\n" +
+                $"You are currently running {result.CurrentVersion}.\n\n" +
+                "Open the GitHub releases page?",
+                "Update available",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Information);
+
+        if (openRelease != MessageBoxResult.Yes)
+            return;
+
+        Process.Start(
+            new ProcessStartInfo
+            {
+                FileName =
+                    AppConstants.GitHubReleasesUrl,
+
+                UseShellExecute = true
+            });
+    }
+
+    private async Task<bool> EnsureAuthenticatorUnlockedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(_activeSecret))
+            return true;
+
+        if (!AuthenticatorStore.Exists())
+            return false;
+
+        if (AppSettingsService.GetRequireWindowsHello())
+        {
+            var verified =
+                await WindowsHelloService.VerifyAsync(
+                    "Unlock Windows XIV Authenticator");
+
+            if (!verified)
+                return false;
+        }
+
+        var secret =
+            AuthenticatorStore.GetSecret();
+
+        if (string.IsNullOrWhiteSpace(secret))
+            return false;
+
+        _activeSecret = secret;
+
+        RefreshOtpDisplay();
+
+        return true;
+    }
+
     private void Hyperlink_RequestNavigate(
         object sender,
         RequestNavigateEventArgs e)
     {
-        var url = e.Uri.AbsoluteUri;
+        var url =
+            e.Uri.AbsoluteUri;
 
         var isAllowed =
             string.Equals(
@@ -66,6 +109,16 @@ public partial class MainWindow : Window
             string.Equals(
                 url,
                 AppConstants.XivModsUrl,
+                StringComparison.OrdinalIgnoreCase)
+            ||
+            string.Equals(
+                url,
+                AppConstants.KofiUrl,
+                StringComparison.OrdinalIgnoreCase)
+            ||
+            string.Equals(
+                url,
+                AppConstants.KofiTipUrl,
                 StringComparison.OrdinalIgnoreCase);
 
         if (!isAllowed)
@@ -80,28 +133,45 @@ public partial class MainWindow : Window
             return;
         }
 
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = url,
-            UseShellExecute = true
-        });
+        Process.Start(
+            new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            });
 
         e.Handled = true;
     }
+
+    private void Kofi_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        Process.Start(
+            new ProcessStartInfo
+            {
+                FileName =
+                    AppConstants.KofiUrl,
+
+                UseShellExecute = true
+            });
+    }
+
     private async void SendToLauncher_Click(
         object sender,
         RoutedEventArgs e)
     {
         if (!await EnsureAuthenticatorUnlockedAsync())
-        {
             return;
-        }
 
         try
         {
-            var otp = TotpService.GenerateCode(_activeSecret!);
+            var otp =
+                TotpService.GenerateCode(
+                    _activeSecret!);
 
-            await XivLauncherService.SendOtpAsync(otp);
+            await XivLauncherService.SendOtpAsync(
+                otp);
 
             MessageBox.Show(
                 "OTP sent to XIVLauncher.",
@@ -138,11 +208,9 @@ public partial class MainWindow : Window
 
         try
         {
-            var otp =
-                TotpService.GenerateCode(_activeSecret!);
-
-                await XivLauncherService.LaunchAndSendOtpAsync(
-                () => TotpService.GenerateCode(_activeSecret!));
+            await XivLauncherService.LaunchAndSendOtpAsync(
+                () => TotpService.GenerateCode(
+                    _activeSecret!));
 
             MessageBox.Show(
                 "XIVLauncher started and OTP sent.",
@@ -176,29 +244,21 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void TestWindowsHello_Click(object sender, RoutedEventArgs e)
+    private void UpdateCountdownVisual(
+        int remaining)
     {
-        var verified = await WindowsHelloService.VerifyAsync(
-            "Verify your identity to test Windows Hello");
-
-        MessageBox.Show(
-            verified
-                ? "Windows Hello verification successful."
-                : "Windows Hello verification failed or was cancelled.",
-            "Windows Hello Test",
-            MessageBoxButton.OK,
-            verified ? MessageBoxImage.Information : MessageBoxImage.Warning);
-    }
-    private void UpdateCountdownVisual(int remaining)
-    {
-        CountdownTextBlock.Text = remaining.ToString();
+        CountdownTextBlock.Text =
+            remaining.ToString();
 
         const double canvasSize = 60;
         const double strokeThickness = 4;
         const double maxSeconds = 30.0;
 
         var progress =
-            Math.Clamp(remaining / maxSeconds, 0.0, 1.0);
+            Math.Clamp(
+                remaining / maxSeconds,
+                0.0,
+                1.0);
 
         if (progress <= 0)
         {
@@ -218,7 +278,8 @@ public partial class MainWindow : Window
         const double startAngle = -90.0;
 
         var endAngle =
-            startAngle + (progress * 359.999);
+            startAngle +
+            (progress * 359.999);
 
         var startPoint =
             PointOnCircle(
@@ -232,29 +293,38 @@ public partial class MainWindow : Window
                 radius,
                 endAngle);
 
-        var figure = new PathFigure
-        {
-            StartPoint = startPoint,
-            IsClosed = false,
-            IsFilled = false
-        };
+        var figure =
+            new PathFigure
+            {
+                StartPoint = startPoint,
+                IsClosed = false,
+                IsFilled = false
+            };
 
         figure.Segments.Add(
             new ArcSegment
             {
                 Point = endPoint,
-                Size = new Size(radius, radius),
+                Size =
+                    new Size(
+                        radius,
+                        radius),
+
                 SweepDirection =
                     SweepDirection.Clockwise,
-                IsLargeArc = progress > 0.5
+
+                IsLargeArc =
+                    progress > 0.5
             });
 
         var geometry =
             new PathGeometry();
 
-        geometry.Figures.Add(figure);
+        geometry.Figures.Add(
+            figure);
 
-        CountdownPath.Data = geometry;
+        CountdownPath.Data =
+            geometry;
     }
 
     private static Point PointOnCircle(
@@ -263,13 +333,18 @@ public partial class MainWindow : Window
         double angleDegrees)
     {
         var angleRadians =
-            angleDegrees * Math.PI / 180.0;
+            angleDegrees *
+            Math.PI /
+            180.0;
 
         return new Point(
             center +
-            radius * Math.Cos(angleRadians),
+            radius *
+            Math.Cos(angleRadians),
+
             center +
-            radius * Math.Sin(angleRadians));
+            radius *
+            Math.Sin(angleRadians));
     }
 
     private void OtpTimer_Tick(
@@ -281,18 +356,27 @@ public partial class MainWindow : Window
 
     private void RefreshOtpDisplay()
     {
-        if (string.IsNullOrWhiteSpace(_activeSecret))
+        if (string.IsNullOrWhiteSpace(
+                _activeSecret))
         {
-            OtpTextBlock.Text = "------";
-            RemainingTextBlock.Text = "";
-            CountdownTextBlock.Text = "";
-            CountdownPath.Data = null;
+            OtpTextBlock.Text =
+                "------";
+
+            RemainingTextBlock.Text =
+                "";
+
+            CountdownTextBlock.Text =
+                "";
+
+            CountdownPath.Data =
+                null;
 
             return;
         }
 
         OtpTextBlock.Text =
-            TotpService.GenerateCode(_activeSecret);
+            TotpService.GenerateCode(
+                _activeSecret);
 
         var remaining =
             TotpService.GetRemainingSeconds();
@@ -300,7 +384,8 @@ public partial class MainWindow : Window
         RemainingTextBlock.Text =
             $"{remaining} second{(remaining == 1 ? "" : "s")} remaining";
 
-        UpdateCountdownVisual(remaining);
+        UpdateCountdownVisual(
+            remaining);
     }
 
     private void LoadSavedAuthenticator()
@@ -310,12 +395,14 @@ public partial class MainWindow : Window
             if (!AuthenticatorStore.Exists())
                 return;
 
-            var stored = AuthenticatorStore.Load();
+            var stored =
+                AuthenticatorStore.Load();
 
             if (stored is null)
                 return;
 
-            SecretTextBox.Text = "";
+            SecretTextBox.Text =
+                "";
 
             Title =
                 $"Windows XIV Authenticator — {stored.DisplayName}";
@@ -324,20 +411,29 @@ public partial class MainWindow : Window
             {
                 _activeSecret = null;
 
-                OtpTextBlock.Text = "------";
-                RemainingTextBlock.Text = "Windows Hello required";
-                CountdownTextBlock.Text = "";
-                CountdownPath.Data = null;
+                OtpTextBlock.Text =
+                    "------";
+
+                RemainingTextBlock.Text =
+                    "Windows Hello required";
+
+                CountdownTextBlock.Text =
+                    "";
+
+                CountdownPath.Data =
+                    null;
 
                 return;
             }
 
-            var secret = AuthenticatorStore.GetSecret();
+            var secret =
+                AuthenticatorStore.GetSecret();
 
             if (string.IsNullOrWhiteSpace(secret))
                 return;
 
-            _activeSecret = secret;
+            _activeSecret =
+                secret;
 
             RefreshOtpDisplay();
         }
@@ -359,14 +455,18 @@ public partial class MainWindow : Window
         {
             var enteredSecret =
                 SecretTextBox.Text.Trim();
-                if (string.IsNullOrWhiteSpace(enteredSecret) &&
+
+            if (string.IsNullOrWhiteSpace(
+                    enteredSecret)
+                &&
                 !await EnsureAuthenticatorUnlockedAsync())
             {
                 return;
             }
 
             var secret =
-                !string.IsNullOrWhiteSpace(enteredSecret)
+                !string.IsNullOrWhiteSpace(
+                    enteredSecret)
                     ? enteredSecret
                     : _activeSecret;
 
@@ -381,7 +481,8 @@ public partial class MainWindow : Window
                 return;
             }
 
-            _activeSecret = secret;
+            _activeSecret =
+                secret;
 
             RefreshOtpDisplay();
         }
@@ -399,14 +500,35 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
-        {
-            Title =
-                "Select authenticator QR image",
+        var choiceWindow =
+            new QrImportChoiceWindow
+            {
+                Owner = this
+            };
 
-            Filter =
-                "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.webp|All files|*.*"
-        };
+        if (choiceWindow.ShowDialog() != true)
+            return;
+
+        if (choiceWindow.ImportFromClipboard)
+        {
+            ImportQrFromClipboard();
+            return;
+        }
+
+        ImportQrFromFile();
+    }
+
+    private void ImportQrFromFile()
+    {
+        var dialog =
+            new OpenFileDialog
+            {
+                Title =
+                    "Select authenticator QR image",
+
+                Filter =
+                    "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.webp|All files|*.*"
+            };
 
         if (dialog.ShowDialog() != true)
             return;
@@ -417,28 +539,8 @@ public partial class MainWindow : Window
                 QrImportService.DecodeQrFromImage(
                     dialog.FileName);
 
-            if (string.IsNullOrWhiteSpace(qrText))
-            {
-                MessageBox.Show(
-                    "No QR code could be detected in that image.",
-                    "QR not found",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-
-                return;
-            }
-
-            if (qrText.StartsWith(
-                    "otpauth-migration://",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                HandleGoogleAuthenticatorImport(
-                    qrText);
-
-                return;
-            }
-
-            HandleStandardOtpImport(qrText);
+            HandleQrImportResult(
+                qrText);
         }
         catch (Exception ex)
         {
@@ -448,6 +550,66 @@ public partial class MainWindow : Window
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
+    }
+
+    private void ImportQrFromClipboard()
+    {
+        try
+        {
+            if (!Clipboard.ContainsImage())
+            {
+                MessageBox.Show(
+                    "There is no image on the clipboard.\n\n" +
+                    "Use Win + Shift + S to capture the QR code, then try again.",
+                    "No clipboard image",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return;
+            }
+
+            var qrText =
+                QrImportService.DecodeQrFromClipboard();
+
+            HandleQrImportResult(
+                qrText);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"The clipboard image could not be imported.\n\n{ex.Message}",
+                "Clipboard import failed",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private void HandleQrImportResult(
+        string? qrText)
+    {
+        if (string.IsNullOrWhiteSpace(qrText))
+        {
+            MessageBox.Show(
+                "No QR code could be detected.",
+                "QR not found",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+
+            return;
+        }
+
+        if (qrText.StartsWith(
+                "otpauth-migration://",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            HandleGoogleAuthenticatorImport(
+                qrText);
+
+            return;
+        }
+
+        HandleStandardOtpImport(
+            qrText);
     }
 
     private void HandleGoogleAuthenticatorImport(
@@ -503,7 +665,8 @@ public partial class MainWindow : Window
         string qrText)
     {
         var secret =
-            OtpUriService.ExtractSecret(qrText);
+            OtpUriService.ExtractSecret(
+                qrText);
 
         if (string.IsNullOrWhiteSpace(secret))
         {
@@ -529,9 +692,11 @@ public partial class MainWindow : Window
             secret,
             displayName);
 
-        _activeSecret = secret;
+        _activeSecret =
+            secret;
 
-        SecretTextBox.Text = "";
+        SecretTextBox.Text =
+            "";
 
         Title =
             $"Windows XIV Authenticator — {displayName}";
@@ -544,14 +709,16 @@ public partial class MainWindow : Window
             MessageBoxButton.OK,
             MessageBoxImage.Information);
     }
+
     private void Settings_Click(
-    object sender,
-    RoutedEventArgs e)
+        object sender,
+        RoutedEventArgs e)
     {
-        var settingsWindow = new SettingsWindow
-        {
-            Owner = this
-        };
+        var settingsWindow =
+            new SettingsWindow
+            {
+                Owner = this
+            };
 
         settingsWindow.ShowDialog();
     }
