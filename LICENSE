@@ -1,21 +1,86 @@
-MIT License
+# LICENSE
 
-Copyright (c) 2026 JoeSparkx
+## Windows XIV Authenticator Source-Available Licence
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Copyright (c) 2026 JSS Software / JoeSparkx
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+All rights reserved except as expressly granted by this licence.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+### 1. Permission to Use
+
+You are granted a non-exclusive, revocable, worldwide licence to download, install, and use official releases of Windows XIV Authenticator free of charge for personal, non-commercial use.
+
+You may also use Windows XIV Authenticator as part of normal Final Fantasy XIV launcher, authenticator, or compatible integration workflows.
+
+### 2. Provider and Integration Development
+
+You may create, distribute, and maintain your own independent plugins, provider DLLs, adapters, scripts, or integrations that communicate with Windows XIV Authenticator through its documented CLI, IPC, provider interface, or other published integration points.
+
+You do not need prior permission to create or distribute an independent integration provided that:
+
+- it does not include modified copies of Windows XIV Authenticator source code or binaries;
+- it does not imply endorsement, authorship, or official support by JSS Software;
+- it does not use JSS Software branding in a way that could reasonably confuse users about who created or maintains the integration; and
+- it complies with all applicable laws and third-party terms.
+
+This permission is intended to allow developers to build support for services such as password managers, authenticators, launchers, or other compatible providers without requiring changes to Windows XIV Authenticator itself.
+
+### 3. Source Availability
+
+The source code may be viewed, reviewed, audited, studied, and used for educational or security-review purposes.
+
+The availability of the source code does not grant permission to modify, fork, republish, repackage, or redistribute modified versions of Windows XIV Authenticator.
+
+### 4. Modifications and Derivative Works
+
+You may not modify, fork, create derivative works from, or distribute modified versions of Windows XIV Authenticator without prior written permission from JSS Software / JoeSparkx.
+
+If you want to make changes, maintain a fork, contribute a substantial derivative work, or redistribute a modified build, ask first.
+
+Permission may be granted on a case-by-case basis.
+
+### 5. Redistribution
+
+You may share links to the official project repository and official release pages.
+
+You may not redistribute official binaries from another download location, mirror the installer, bundle the application into another installer or package, or represent a redistributed copy as an official release without prior written permission.
+
+Where redistribution permission is granted, all copyright, attribution, licence, and security notices must remain intact.
+
+### 6. Commercial Use
+
+Commercial use, resale, paid redistribution, bundling into a paid product or service, or use primarily intended to generate revenue requires prior written permission.
+
+Independent integrations developed under Section 2 may be distributed under their own terms, including commercially, provided they do not contain or redistribute Windows XIV Authenticator code or binaries and do not imply official endorsement.
+
+### 7. Security and Branding
+
+You may not use the Windows XIV Authenticator, XIV Mods, JSS Software, or JoeSparkx names, logos, icons, or branding in a way that falsely suggests that an unofficial build, fork, integration, or service is official, endorsed, supported, or maintained by JSS Software.
+
+You may accurately state that your software is compatible with Windows XIV Authenticator.
+
+### 8. No Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, SECURITY, RELIABILITY, OR NON-INFRINGEMENT.
+
+USE OF THE SOFTWARE IS AT YOUR OWN RISK.
+
+JSS SOFTWARE / JOESPARKX SHALL NOT BE LIABLE FOR ANY CLAIM, LOSS, DAMAGE, ACCOUNT ACCESS ISSUE, DATA LOSS, SECURITY INCIDENT, OR OTHER LIABILITY ARISING FROM THE USE OR INABILITY TO USE THE SOFTWARE.
+
+### 9. Third-Party Services
+
+Windows XIV Authenticator may interact with third-party software or services.
+
+Those third parties are responsible for their own software, services, terms, and security. This licence does not grant rights to any third-party intellectual property.
+
+### 10. Termination
+
+Your rights under this licence terminate automatically if you materially breach its terms.
+
+Upon termination, you must stop distributing any affected copies or derivative works and comply with any reasonable request to remove unauthorised redistribution.
+
+### 11. Permission Requests
+
+For permission to modify, fork, redistribute, repackage, or commercially use Windows XIV Authenticator, contact the project maintainer through the official repository:
+
+https://github.com/JoeSparkx-Software/WindowsXIV-Authenticator
