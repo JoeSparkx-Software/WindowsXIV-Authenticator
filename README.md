@@ -1,10 +1,6 @@
 # Windows XIV Authenticator
 <p align="center">
-  <img
-    src="https://github.com/JoeSparkx-Software/WindowsXIV-Authenticator/blob/main/WindowsXIVAuthenticator/assets/JSSAuthenticatorpic.png?raw=true"
-    alt="Windows XIV Authenticator"
-    width="420"
-  />
+  <img src="https://raw.githubusercontent.com/JoeSparkx-Software/WindowsXIV-Authenticator/main/WindowsXIVAuthenticator/assets/JSSAuthenticatorpic2.png" alt="Windows XIV Authenticator" width="320" />
 </p>
 
 Windows XIV Authenticator is a free Windows desktop authenticator designed for Final Fantasy XIV and XIVLauncher.
