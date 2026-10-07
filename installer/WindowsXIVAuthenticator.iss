@@ -15,25 +15,34 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppRepoUrl}
 AppSupportURL={#AppRepoUrl}
 AppUpdatesURL={#AppRepoUrl}/releases
+
 DefaultDirName={localappdata}\Programs\JSS Software\XIV Authenticator
 DefaultGroupName=JSS Software\XIV Authenticator
+
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
+
 ArchitecturesAllowed=x64compatible
+MinVersion=10.0.22000
+
 OutputDir=..\dist
 OutputBaseFilename=WindowsXIVAuthenticator-Setup-{#AppVersion}
+
 SetupIconFile=assets\xivauthenticator.ico
 UninstallDisplayIcon={app}\Icons\xivauthenticator.ico
+
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+
 CloseApplications=yes
 RestartApplications=no
+
 LicenseFile=..\LICENSE
+
 UsePreviousAppDir=yes
 UsePreviousGroup=yes
 Uninstallable=yes
-MinVersion=10.0.22000
 
 [Files]
 Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -104,18 +113,24 @@ begin
 end;
 
 function InitializeSetup(): Boolean;
+var
+  NL: String;
 begin
   Result := True;
+
+  NL :=
+    Chr(13) +
+    Chr(10);
 
   if not HasUsableTpm20() then
   begin
     MsgBox(
       'Windows XIV Authenticator 2.x requires Windows 11 with TPM 2.0 enabled and available.' +
-      #13#10#13#10 +
+      NL + NL +
       'This PC does not meet the supported hardware requirements for the v2 security model.' +
-      #13#10#13#10 +
+      NL + NL +
       'If you need compatibility with a system without TPM 2.0, install the latest Windows XIV Authenticator 1.0.x release instead.' +
-      #13#10#13#10 +
+      NL + NL +
       'Version 1 uses the older Windows DPAPI-based storage model and does not provide the TPM-backed v2 vault.',
       mbError,
       MB_OK);
