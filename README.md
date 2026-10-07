@@ -241,6 +241,14 @@ Independent provider DLLs, adapters, plugins, and integrations using the documen
 
 See `LICENSE` for the complete terms.
 
+## AI-assisted development
+
+This project makes use of AI-assisted tooling for documentation, wording, and code review.
+
+All changes are reviewed and tested before release, and the project remains maintained by JSS Software.
+
+I make shameless use of AI for writing documentation because I hate typing words.
+
 ## Disclaimer
 
 Windows XIV Authenticator is an independent community project.
