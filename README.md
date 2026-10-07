@@ -259,9 +259,9 @@ Repository:
 
 https://github.com/JoeSparkx-Software/WindowsXIV-Authenticator
 
-XIV Mods:
+Github:
 
-https://xivmods.com/
+https://github.com/JoeSparkx / https://github.com/JoeSparkx-Software/
 
 Support development:
 

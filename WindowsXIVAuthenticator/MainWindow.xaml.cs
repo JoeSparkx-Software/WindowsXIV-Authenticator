@@ -106,11 +106,7 @@ public partial class MainWindow : Window
                 url,
                 AppConstants.GitHubRepositoryUrl,
                 StringComparison.OrdinalIgnoreCase)
-            ||
-            string.Equals(
-                url,
-                AppConstants.XivModsUrl,
-                StringComparison.OrdinalIgnoreCase)
+
             ||
             string.Equals(
                 url,
