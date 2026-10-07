@@ -33,6 +33,7 @@ LicenseFile=..\LICENSE
 UsePreviousAppDir=yes
 UsePreviousGroup=yes
 Uninstallable=yes
+MinVersion=10.0.22000
 
 [Files]
 Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -51,3 +52,74 @@ Name: "{group}\Uninstall XIV Authenticator"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "Launch XIV Authenticator"; Flags: nowait postinstall skipifsilent
+
+[Code]
+
+function HasUsableTpm20(): Boolean;
+var
+  Locator: Variant;
+  Services: Variant;
+  TpmObjects: Variant;
+  Tpm: Variant;
+  SpecVersion: String;
+begin
+  Result := False;
+
+  try
+    Locator :=
+      CreateOleObject(
+        'WbemScripting.SWbemLocator');
+
+    Services :=
+      Locator.ConnectServer(
+        '.',
+        'root\CIMV2\Security\MicrosoftTpm');
+
+    TpmObjects :=
+      Services.ExecQuery(
+        'SELECT * FROM Win32_Tpm');
+
+    if TpmObjects.Count = 0 then
+      Exit;
+
+    Tpm :=
+      TpmObjects.ItemIndex(0);
+
+    if not Tpm.IsEnabled_InitialValue then
+      Exit;
+
+    SpecVersion :=
+      VarToStr(
+        Tpm.SpecVersion);
+
+    if Pos(
+         '2.0',
+         SpecVersion) = 0 then
+      Exit;
+
+    Result := True;
+  except
+    Result := False;
+  end;
+end;
+
+function InitializeSetup(): Boolean;
+begin
+  Result := True;
+
+  if not HasUsableTpm20() then
+  begin
+    MsgBox(
+      'Windows XIV Authenticator 2.x requires Windows 11 with TPM 2.0 enabled and available.' +
+      #13#10#13#10 +
+      'This PC does not meet the supported hardware requirements for the v2 security model.' +
+      #13#10#13#10 +
+      'If you need compatibility with a system without TPM 2.0, install the latest Windows XIV Authenticator 1.0.x release instead.' +
+      #13#10#13#10 +
+      'Version 1 uses the older Windows DPAPI-based storage model and does not provide the TPM-backed v2 vault.',
+      mbError,
+      MB_OK);
+
+    Result := False;
+  end;
+end;

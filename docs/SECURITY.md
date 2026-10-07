@@ -15,7 +15,7 @@ RSA-OAEP-SHA256 wrapped vault key
     ↓
 non-exportable Windows CNG key
     ↓
-Microsoft Platform Crypto Provider / TPM-backed protection where supported
+Microsoft Platform Crypto Provider / TPM-backed protection is required for Windows XIV Authenticator 2.x
 ```
 
 Windows Hello is used separately as the application-level user verification gate before the application or CLI unlocks the vault.
@@ -39,6 +39,18 @@ Windows XIV Authenticator is intended to:
 - keep the implementation small enough to audit.
 
 It is not intended to act as a hardened security boundary against arbitrary malicious software already executing as the same Windows user.
+
+## Supported security baseline
+
+Windows XIV Authenticator 2.x intentionally requires a supported Windows 11 environment with a working TPM 2.0.
+
+The v2 vault does not silently fall back to software-backed CNG key storage when the Microsoft Platform Crypto Provider is unavailable.
+
+This is a deliberate security boundary.
+
+Systems that cannot provide a usable TPM 2.0 should use the latest Windows XIV Authenticator 1.0.x compatibility release instead.
+
+The 1.0.x line uses the previous Windows DPAPI-based secret-storage model and does not provide the TPM-backed vault protections described in this document.
 
 ---
 

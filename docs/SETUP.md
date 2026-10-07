@@ -4,6 +4,20 @@ This guide explains how to install, configure, and use Windows XIV Authenticator
 
 Windows XIV Authenticator is designed to act as an additional local authenticator. You can keep the same TOTP account on your phone as a backup while using the Windows application for convenience.
 
+## Supported systems
+
+Windows XIV Authenticator 2.x is intended for supported Windows 11 systems with:
+
+- Windows 11 x64
+- TPM 2.0 enabled and available
+- Windows Hello configured for the current Windows account
+
+The installer checks for a usable TPM 2.0 before installation.
+
+If your PC does not meet the v2 hardware requirements, install the latest Windows XIV Authenticator 1.0.x release instead.
+
+Version 1.0.x remains available as the legacy compatibility release and uses Windows DPAPI-based storage. It does not provide the TPM-backed vault used by version 2.x.
+
 ---
 
 ## 1. Install Windows XIV Authenticator
