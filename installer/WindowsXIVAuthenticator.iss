@@ -98,8 +98,7 @@ begin
       Exit;
 
     SpecVersion :=
-      VarToStr(
-        Tpm.SpecVersion);
+      Tpm.SpecVersion;
 
     if Pos(
          '2.0',
