@@ -102,17 +102,6 @@
                     FontWeight="SemiBold"
                     Opacity="0.65"/>
 
-                <TextBlock
-                    FontSize="13"
-                    Margin="0,1,0,0">
-
-                    <Hyperlink
-                        NavigateUri="https://xivmods.com/"
-                        RequestNavigate="Hyperlink_RequestNavigate">
-                        XIV Mods
-                    </Hyperlink>
-
-                </TextBlock>
 
                 <TextBlock
                     Text="Windows XIV Authenticator"
