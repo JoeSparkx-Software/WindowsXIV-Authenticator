@@ -1,15 +1,21 @@
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+
 namespace WindowsXIVAuthenticator.Services;
 
-public sealed class StoredAuthenticator
+public sealed class LegacyStoredAuthenticator
 {
     public string DisplayName { get; set; } = "";
+
     public string EncryptedSecret { get; set; } = "";
 }
 
 public static class AuthenticatorStore
 {
     private static readonly byte[] Entropy =
-        Encoding.UTF8.GetBytes("WindowsXIVAuthenticator:v1");
+        Encoding.UTF8.GetBytes(
+            "WindowsXIVAuthenticator:v1");
 
     private static readonly string AppDirectory =
         Path.Combine(
@@ -18,57 +24,37 @@ public static class AuthenticatorStore
             "WindowsXIVAuthenticator");
 
     private static readonly string StorePath =
-        Path.Combine(AppDirectory, "authenticator.json");
+        Path.Combine(
+            AppDirectory,
+            "authenticator.json");
 
-    public static void Save(
-        string secret,
-        string displayName)
+    public static bool Exists()
     {
-        Directory.CreateDirectory(AppDirectory);
-
-        var secretBytes =
-            Encoding.UTF8.GetBytes(secret);
-
-        var encryptedBytes =
-            ProtectedData.Protect(
-                secretBytes,
-                Entropy,
-                DataProtectionScope.CurrentUser);
-
-        var stored = new StoredAuthenticator
-        {
-            DisplayName = displayName,
-            EncryptedSecret =
-                Convert.ToBase64String(encryptedBytes)
-        };
-
-        var json = JsonSerializer.Serialize(
-            stored,
-            new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-
-        File.WriteAllText(StorePath, json);
+        return File.Exists(
+            StorePath);
     }
 
-    public static StoredAuthenticator? Load()
+    public static LegacyStoredAuthenticator? Load()
     {
-        if (!File.Exists(StorePath))
+        if (!Exists())
             return null;
 
-        var json = File.ReadAllText(StorePath);
+        var json =
+            File.ReadAllText(
+                StorePath);
 
-        return JsonSerializer.Deserialize<StoredAuthenticator>(
+        return JsonSerializer.Deserialize<LegacyStoredAuthenticator>(
             json);
     }
 
     public static string? GetSecret()
     {
-        var stored = Load();
+        var stored =
+            Load();
 
         if (stored is null ||
-            string.IsNullOrWhiteSpace(stored.EncryptedSecret))
+            string.IsNullOrWhiteSpace(
+                stored.EncryptedSecret))
         {
             return null;
         }
@@ -83,17 +69,24 @@ public static class AuthenticatorStore
                 Entropy,
                 DataProtectionScope.CurrentUser);
 
-        return Encoding.UTF8.GetString(decryptedBytes);
-    }
-
-    public static bool Exists()
-    {
-        return File.Exists(StorePath);
+        try
+        {
+            return Encoding.UTF8.GetString(
+                decryptedBytes);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(
+                decryptedBytes);
+        }
     }
 
     public static void Delete()
     {
-        if (File.Exists(StorePath))
-            File.Delete(StorePath);
+        if (Exists())
+        {
+            File.Delete(
+                StorePath);
+        }
     }
 }

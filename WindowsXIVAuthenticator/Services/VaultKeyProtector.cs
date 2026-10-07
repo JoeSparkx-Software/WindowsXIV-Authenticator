@@ -12,7 +12,7 @@ public sealed class ProtectedVaultKey
 public static class VaultKeyProtector
 {
     private const string KeyName =
-        "WindowsXIVAuthenticator.VaultKey.v2";
+        "WindowsXIVAuthenticator.VaultKey.AppGate.v2";
 
     private const int VaultKeySizeBytes = 32;
 
@@ -37,21 +37,23 @@ public static class VaultKeyProtector
                 vaultKey,
                 RSAEncryptionPadding.OaepSHA256);
 
-        var result =
-            new ProtectedVaultKey
-            {
-                Version = 2,
+        try
+        {
+            return Task.FromResult(
+                new ProtectedVaultKey
+                {
+                    Version = 2,
 
-                CipherText =
-                    Convert.ToBase64String(
-                        encryptedKey)
-            };
-
-        CryptographicOperations.ZeroMemory(
-            encryptedKey);
-
-        return Task.FromResult(
-            result);
+                    CipherText =
+                        Convert.ToBase64String(
+                            encryptedKey)
+                });
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(
+                encryptedKey);
+        }
     }
 
     public static Task<byte[]> UnprotectAsync(
@@ -130,18 +132,7 @@ public static class VaultKeyProtector
                     CngExportPolicies.None,
 
                 KeyUsage =
-                    CngKeyUsages.Decryption,
-
-                UIPolicy =
-                    new CngUIPolicy(
-                        CngUIProtectionLevels
-                            .ForceHighProtection,
-
-                        "Windows XIV Authenticator",
-
-                        "Protects the local authenticator vault.",
-
-                        "Set up Windows XIV Authenticator vault protection.")
+                    CngKeyUsages.Decryption
             };
 
         return CngKey.Create(

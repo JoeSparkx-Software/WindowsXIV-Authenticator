@@ -4,7 +4,6 @@ public sealed class AppSettings
 {
     public string? XivLauncherPath { get; set; }
 
-    public bool RequireWindowsHello { get; set; }
 }
 
 public static class AppSettingsService
@@ -127,22 +126,4 @@ public static class AppSettingsService
             settings);
     }
 
-    public static bool GetRequireWindowsHello()
-    {
-        return Load()
-            .RequireWindowsHello;
-    }
-
-    public static void SetRequireWindowsHello(
-        bool enabled)
-    {
-        var settings =
-            Load();
-
-        settings.RequireWindowsHello =
-            enabled;
-
-        Save(
-            settings);
-    }
 }

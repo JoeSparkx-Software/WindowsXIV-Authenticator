@@ -111,15 +111,6 @@
                 FontSize="16"
                 FontWeight="SemiBold"
                 Margin="0,0,0,10"/>
-
-            <CheckBox
-                x:Name="RequireWindowsHelloCheckBox"
-                Content="Require Windows Hello before revealing or sending OTP"
-                FontSize="13"
-                VerticalAlignment="Center"
-                Checked="RequireWindowsHello_Checked"
-                Unchecked="RequireWindowsHello_Unchecked"/>
-
         </StackPanel>
 
         <TextBlock

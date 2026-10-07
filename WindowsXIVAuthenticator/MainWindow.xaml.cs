@@ -64,35 +64,35 @@ public partial class MainWindow : Window
 
     private async Task<bool> EnsureAuthenticatorUnlockedAsync()
     {
-        if (!string.IsNullOrWhiteSpace(_activeSecret))
-            return true;
-
-        if (!AuthenticatorStore.Exists())
-            return false;
-
-        if (AppSettingsService.GetRequireWindowsHello())
+        if (!string.IsNullOrWhiteSpace(
+                _activeSecret))
         {
-            var verified =
-                await WindowsHelloService.VerifyAsync(
-                    "Unlock Windows XIV Authenticator");
-
-            if (!verified)
-                return false;
+            return true;
         }
 
+        if (!AuthenticatorVaultStore.Exists())
+            return false;
+
+        var verified =
+            await WindowsHelloService.VerifyAsync(
+                "Unlock Windows XIV Authenticator");
+
+        if (!verified)
+            return false;
+
         var secret =
-            AuthenticatorStore.GetSecret();
+            await AuthenticatorVaultStore.GetSecretAsync();
 
         if (string.IsNullOrWhiteSpace(secret))
             return false;
 
-        _activeSecret = secret;
+        _activeSecret =
+            secret;
 
         RefreshOtpDisplay();
 
         return true;
     }
-
     private void Hyperlink_RequestNavigate(
         object sender,
         RequestNavigateEventArgs e)
@@ -392,50 +392,35 @@ public partial class MainWindow : Window
     {
         try
         {
-            if (!AuthenticatorStore.Exists())
+            if (!AuthenticatorVaultStore.Exists())
                 return;
 
-            var stored =
-                AuthenticatorStore.Load();
+            var vault =
+                AuthenticatorVaultStore.Load();
 
-            if (stored is null)
+            if (vault is null)
                 return;
 
             SecretTextBox.Text =
                 "";
 
             Title =
-                $"Windows XIV Authenticator — {stored.DisplayName}";
-
-            if (AppSettingsService.GetRequireWindowsHello())
-            {
-                _activeSecret = null;
-
-                OtpTextBlock.Text =
-                    "------";
-
-                RemainingTextBlock.Text =
-                    "Windows Hello required";
-
-                CountdownTextBlock.Text =
-                    "";
-
-                CountdownPath.Data =
-                    null;
-
-                return;
-            }
-
-            var secret =
-                AuthenticatorStore.GetSecret();
-
-            if (string.IsNullOrWhiteSpace(secret))
-                return;
+                $"Windows XIV Authenticator — {vault.DisplayName}";
 
             _activeSecret =
-                secret;
+                null;
 
-            RefreshOtpDisplay();
+            OtpTextBlock.Text =
+                "------";
+
+            RemainingTextBlock.Text =
+                "Windows security required";
+
+            CountdownTextBlock.Text =
+                "";
+
+            CountdownPath.Data =
+                null;
         }
         catch (Exception ex)
         {
@@ -684,32 +669,42 @@ public partial class MainWindow : Window
             "Authenticator account");
     }
 
-    private void ImportAuthenticatorEntry(
+    private async void ImportAuthenticatorEntry(
         string secret,
         string displayName)
     {
-        AuthenticatorStore.Save(
-            secret,
-            displayName);
+        try
+        {
+            await AuthenticatorVaultStore.SaveAsync(
+                secret,
+                displayName);
 
-        _activeSecret =
-            secret;
+            _activeSecret =
+                secret;
 
-        SecretTextBox.Text =
-            "";
+            SecretTextBox.Text =
+                "";
 
-        Title =
-            $"Windows XIV Authenticator — {displayName}";
+            Title =
+                $"Windows XIV Authenticator — {displayName}";
 
-        RefreshOtpDisplay();
+            RefreshOtpDisplay();
 
-        MessageBox.Show(
-            $"Imported and securely saved:\n\n{displayName}",
-            "Authenticator import",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+            MessageBox.Show(
+                $"Imported and securely saved:\n\n{displayName}",
+                "Authenticator import",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"The authenticator could not be saved.\n\n{ex.Message}",
+                "Authenticator save failed",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
-
     private void Settings_Click(
         object sender,
         RoutedEventArgs e)

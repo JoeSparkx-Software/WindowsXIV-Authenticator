@@ -54,7 +54,7 @@ public partial class App : Application
     {
         try
         {
-            if (!AuthenticatorStore.Exists())
+            if (!AuthenticatorVaultStore.Exists())
             {
                 MessageBox.Show(
                     "No authenticator account is configured.\n\n" +
@@ -66,18 +66,15 @@ public partial class App : Application
                 return;
             }
 
-            if (AppSettingsService.GetRequireWindowsHello())
-            {
-                var verified =
-                    await WindowsHelloService.VerifyAsync(
-                        "Verify your identity to launch Final Fantasy XIV");
+            var verified =
+                await WindowsHelloService.VerifyAsync(
+                    "Verify your identity to launch Final Fantasy XIV");
 
-                if (!verified)
-                    return;
-            }
+            if (!verified)
+                return;
 
             var secret =
-                AuthenticatorStore.GetSecret();
+                await AuthenticatorVaultStore.GetSecretAsync();
 
             if (string.IsNullOrWhiteSpace(secret))
             {
