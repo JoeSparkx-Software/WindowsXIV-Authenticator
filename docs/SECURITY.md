@@ -42,15 +42,15 @@ It is not intended to act as a hardened security boundary against arbitrary mali
 
 ## Supported security baseline
 
-Windows XIV Authenticator 2.x intentionally requires a supported Windows 11 environment with a working TPM 2.0.
+Windows XIV Authenticator 2.x requires a supported Windows 11 environment with a working TPM 2.0.
 
-The v2 vault does not silently fall back to software-backed CNG key storage when the Microsoft Platform Crypto Provider is unavailable.
+The v2 vault requires the Microsoft Platform Crypto Provider and does not silently fall back to software-backed CNG key storage.
 
-This is a deliberate security boundary.
+This is a deliberate security requirement.
 
-Systems that cannot provide a usable TPM 2.0 should use the latest Windows XIV Authenticator 1.0.x compatibility release instead.
+Systems without a usable TPM 2.0 should use the latest Windows XIV Authenticator 1.0.x compatibility release instead.
 
-The 1.0.x line uses the previous Windows DPAPI-based secret-storage model and does not provide the TPM-backed vault protections described in this document.
+The 1.0.x line uses the previous Windows DPAPI-based secret-storage model and does not provide the TPM-backed protections described in this document.
 
 ---
 

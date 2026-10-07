@@ -23,9 +23,9 @@ Windows XIV Authenticator 2.x requires:
 - TPM 2.0 enabled and available
 - Windows Hello configured for the current Windows account
 
-The v2 security model intentionally requires TPM-backed key protection and does not fall back to software-backed key storage.
+Version 2.x requires the Microsoft Platform Crypto Provider and does not fall back to software-backed key storage.
 
-If your system does not provide a usable TPM 2.0, use the latest Windows XIV Authenticator 1.0.x release instead.
+Unsupported Windows 11 installations without a usable TPM 2.0 should use the latest Windows XIV Authenticator 1.0.x release instead.
 
 Version 1.0.x is the legacy compatibility line and uses the older Windows DPAPI-based storage model rather than the TPM-backed v2 vault.
 
