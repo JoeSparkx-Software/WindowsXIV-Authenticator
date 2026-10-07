@@ -3,7 +3,7 @@ namespace WindowsXIVAuthenticator.Services;
 public sealed class AppSettings
 {
     public string? XivLauncherPath { get; set; }
-    public bool RequireWindowsHello { get; set; }
+
 }
 
 public static class AppSettingsService
@@ -15,7 +15,9 @@ public static class AppSettingsService
             "WindowsXIVAuthenticator");
 
     private static readonly string SettingsPath =
-        Path.Combine(AppDirectory, "settings.json");
+        Path.Combine(
+            AppDirectory,
+            "settings.json");
 
     public static string DefaultLauncherPath =>
         Path.Combine(
@@ -23,6 +25,11 @@ public static class AppSettingsService
                 Environment.SpecialFolder.LocalApplicationData),
             "XIVLauncher",
             "XIVLauncher.exe");
+
+    public static string DefaultVaultPath =>
+        Path.Combine(
+            AppDirectory,
+            "vault.json");
 
     public static AppSettings Load()
     {
@@ -32,10 +39,12 @@ public static class AppSettingsService
                 return new AppSettings();
 
             var json =
-                File.ReadAllText(SettingsPath);
+                File.ReadAllText(
+                    SettingsPath);
 
-            return JsonSerializer.Deserialize<AppSettings>(json)
-                ?? new AppSettings();
+            return JsonSerializer.Deserialize<AppSettings>(
+                       json)
+                   ?? new AppSettings();
         }
         catch
         {
@@ -43,9 +52,11 @@ public static class AppSettingsService
         }
     }
 
-    public static void Save(AppSettings settings)
+    public static void Save(
+        AppSettings settings)
     {
-        Directory.CreateDirectory(AppDirectory);
+        Directory.CreateDirectory(
+            AppDirectory);
 
         var json =
             JsonSerializer.Serialize(
@@ -62,17 +73,23 @@ public static class AppSettingsService
 
     public static string? GetLauncherPath()
     {
-        var settings = Load();
+        var settings =
+            Load();
 
         if (!string.IsNullOrWhiteSpace(
-                settings.XivLauncherPath) &&
-            File.Exists(settings.XivLauncherPath))
+                settings.XivLauncherPath)
+            &&
+            File.Exists(
+                settings.XivLauncherPath))
         {
             return settings.XivLauncherPath;
         }
 
-        if (File.Exists(DefaultLauncherPath))
+        if (File.Exists(
+                DefaultLauncherPath))
+        {
             return DefaultLauncherPath;
+        }
 
         return null;
     }
@@ -87,32 +104,26 @@ public static class AppSettingsService
                 path);
         }
 
-        var settings = Load();
+        var settings =
+            Load();
 
-        settings.XivLauncherPath = path;
+        settings.XivLauncherPath =
+            path;
 
-        Save(settings);
+        Save(
+            settings);
     }
 
     public static void ResetLauncherPath()
     {
-        var settings = Load();
+        var settings =
+            Load();
 
-        settings.XivLauncherPath = null;
+        settings.XivLauncherPath =
+            null;
 
-        Save(settings);
+        Save(
+            settings);
     }
-    public static bool GetRequireWindowsHello()
-    {
-        return Load().RequireWindowsHello;
-    }
 
-    public static void SetRequireWindowsHello(bool enabled)
-    {
-        var settings = Load();
-
-        settings.RequireWindowsHello = enabled;
-
-        Save(settings);
-    }
 }

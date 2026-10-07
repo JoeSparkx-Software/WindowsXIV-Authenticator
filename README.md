@@ -6,237 +6,263 @@
     width="420"
   />
 </p>
-A lightweight Windows authenticator for Final Fantasy XIV and XIVLauncher.
 
-Built by **JSS Software** https://xivmods.com
+Windows XIV Authenticator is a free Windows desktop authenticator designed for Final Fantasy XIV and XIVLauncher.
 
-Windows XIV Authenticator stores your FFXIV TOTP secret locally, generates the same 6-digit OTP codes as standard authenticator apps, and can send the current OTP directly to XIVLauncher.
+It provides a simple local TOTP workflow without requiring a paid password manager, cloud account, subscription, or separate online service.
 
-It is designed for people who want a convenient Windows-based authenticator while still keeping their existing authenticator on their phone.
+The project is built around one principle:
 
-## Features
+**make the normal path easy enough that people cannot accidentally make a mess of it.**
 
-- Generate standard 6-digit TOTP codes
-- Import authenticator accounts from QR code images
-- Import Google Authenticator export QR codes
-- Select individual accounts from multi-account Google Authenticator exports
-- Store authenticator secrets securely using Windows DPAPI
-- Automatically refresh OTP codes every 30 seconds
-- Visual countdown timer
-- Send OTP codes directly to XIVLauncher
-- Launch XIVLauncher and automatically submit the current OTP
-- Configurable XIVLauncher executable location
-- Designed for desktop shortcuts and one-click launching
-- No telemetry
-- No analytics
-- No cloud storage
-- No remote OTP generation
+## System requirements
 
-## Desktop shortcuts
+Windows XIV Authenticator 2.x requires:
 
-The installer is intended to create two shortcuts:
+- Windows 11 x64
+- TPM 2.0 enabled and available
+- Windows Hello configured for the current Windows account
 
-### XIV Authenticator
+The v2 security model intentionally requires TPM-backed key protection and does not fall back to software-backed key storage.
 
-Opens the normal Windows XIV Authenticator interface.
+If your system does not provide a usable TPM 2.0, use the latest Windows XIV Authenticator 1.0.x release instead.
 
-Use this to:
+Version 1.0.x is the legacy compatibility line and uses the older Windows DPAPI-based storage model rather than the TPM-backed v2 vault.
 
-- view the current OTP
-- import or update an authenticator
-- configure XIVLauncher
-- manually send an OTP
-- access application settings
+## What it does
 
-### Launch XIV
+Windows XIV Authenticator can:
 
-Runs Windows XIV Authenticator in automatic launch mode:
-
-```text
-WindowsXIVAuthenticator.exe --launch
-```
-
-This mode:
-
-1. Loads the locally stored authenticator secret
-2. Starts XIVLauncher
-3. Waits for XIVLauncher's OTP listener
-4. Generates the current OTP
-5. Sends the OTP to XIVLauncher
-6. Exits
+- import a standard TOTP QR code;
+- import supported Google Authenticator exports;
+- generate the current six-digit OTP;
+- send the OTP directly to XIVLauncher;
+- launch XIVLauncher and send a fresh OTP automatically;
+- protect the authenticator vault using Windows security;
+- use Windows Hello PIN, fingerprint, or face verification before unlocking the authenticator;
+- provide a local CLI for launcher and integration use.
 
 ## Security model
 
-Authenticator secrets are stored locally on the Windows PC.
+Version 2 uses a local encrypted vault stored under:
 
-Secrets are encrypted using the Windows Data Protection API (DPAPI) with `CurrentUser` scope. The stored encrypted value is therefore tied to the Windows user account that created it.
+`%LOCALAPPDATA%\WindowsXIVAuthenticator\vault.json`
 
-Windows XIV Authenticator does not upload or transmit authenticator secrets.
+The TOTP secret is encrypted using AES-256-GCM.
 
-Network activity is intentionally limited to:
+The AES vault key is protected by a non-exportable Windows CNG key using the Microsoft Platform Crypto Provider, allowing TPM-backed protection where supported by the user's system.
 
-- `127.0.0.1:4646` for local communication with XIVLauncher
-- GitHub for project links and future release/update checks
+Windows Hello is used as the application-level unlock gate, giving users the familiar PIN, fingerprint, or face verification flow.
 
-The application does not use telemetry, analytics, advertising, remote logging, or cloud-based OTP generation.
+Once successfully unlocked, the authenticator secret may remain available in the application's memory for the lifetime of that process so the user is not repeatedly prompted during the same session.
 
-Treat authenticator QR codes, exported authenticator images, and TOTP secrets like passwords. Anyone who obtains the underlying secret can generate valid OTP codes.
+This is intentionally a practical desktop application security model.
 
-## XIVLauncher integration
+Windows XIV Authenticator is designed to protect secrets at rest and prevent casual access to the authenticator. It is not intended to provide a hardened security boundary against malware already running with the same Windows user privileges.
 
-Windows XIV Authenticator uses XIVLauncher's supported OTP macro listener.
+If an attacker already has arbitrary code execution as your Windows account, you have significantly larger security problems than an FFXIV OTP.
 
-XIVLauncher must have:
+## Keep your phone as a backup
 
-**Enable XL Authenticator app/OTP macro support**
+You do not need to choose between Windows XIV Authenticator and your phone.
 
-enabled in its settings.
+TOTP allows the same secret to exist on more than one authenticator.
 
-The OTP is sent locally to:
+A sensible setup is:
 
-```text
-http://127.0.0.1:4646/ffxivlauncher/<OTP>
-```
+1. keep the authenticator on your phone;
+2. import the same TOTP secret into Windows XIV Authenticator;
+3. use the desktop version for convenience;
+4. keep the phone as an independent backup.
 
-No external service is involved in this process.
+Windows XIV Authenticator is not intended to become your only recovery path.
 
-## Setup
+## Local only
 
-See the full setup guide:
+Windows XIV Authenticator does not require:
 
-[Setup Guide](docs/SETUP.md)
+- a cloud account;
+- a JSS account;
+- a subscription;
+- synchronisation through JSS servers;
+- remote secret storage.
 
-## Requirements
+The authenticator vault remains on the local Windows user profile.
 
-- Windows 10 or Windows 11
-- XIVLauncher
-- A configured Final Fantasy XIV software authenticator / TOTP account
+## XIVLauncher support
 
-The current development version targets .NET 10.
+Windows XIV Authenticator can send a generated OTP directly to XIVLauncher when XIVLauncher's authenticator app / OTP macro support is enabled.
 
-## Supported imports
+The application also includes a **Launch XIV** workflow that starts XIVLauncher, waits for it to become ready, generates a fresh OTP, and sends it automatically.
 
-Currently supported:
+## CLI
 
-- Standard `otpauth://` QR codes
-- Google Authenticator export QR codes
-- PNG
-- JPG / JPEG
-- BMP
-- WebP
+Version 2 includes a small command-line client:
 
-Planned:
+`xiv-auth.exe`
 
-- Webcam QR scanning
-- Clipboard image import
-
-## XIVLauncher path
-
-Windows XIV Authenticator automatically checks the normal XIVLauncher location:
+Current command:
 
 ```text
-%LOCALAPPDATA%\XIVLauncher\XIVLauncher.exe
+xiv-auth code
 ```
 
-If XIVLauncher is installed elsewhere, its location can be configured in **Settings**.
+Expected behaviour:
 
-## Local data
+- Windows Hello is requested;
+- the local vault is unlocked;
+- a fresh six-digit OTP is generated;
+- the OTP alone is written to standard output;
+- success returns exit code `0`;
+- failures return a non-zero exit code and an error message on standard error.
 
-Application data is stored under:
+Example:
 
 ```text
-%LOCALAPPDATA%\WindowsXIVAuthenticator
+C:\> xiv-auth code
+391902
 ```
 
-The authenticator secret is stored encrypted using Windows DPAPI.
+The CLI exists primarily to provide a simple, stable integration path for launcher and provider development.
 
-The plaintext TOTP secret is not stored in the application configuration file.
+## Provider integrations
 
-## Building from source
+The planned XIVLauncher integration uses a generic provider model.
 
-Clone the repository:
+Windows XIV Authenticator will provide the free default implementation.
+
+Other developers are welcome to build independent adapters for other services using the documented provider interface or CLI.
+
+For example, somebody could choose to implement their own adapter for:
+
+- Bitwarden;
+- 1Password;
+- KeePassXC;
+- Proton;
+- another authenticator or password manager;
+- a completely custom provider.
+
+JSS Software does not intend to build or maintain every third-party adapter.
+
+The project will provide the interface and a working Windows XIV Authenticator implementation. Developers who want another provider can build and maintain their own adapter.
+
+Independent provider integrations are specifically permitted by the project licence provided they do not redistribute or modify Windows XIV Authenticator itself without permission.
+
+## Installation
+
+Download the latest official installer from:
+
+https://github.com/JoeSparkx-Software/WindowsXIV-Authenticator/releases
+
+Public releases use the installer package rather than a portable ZIP to keep installation and upgrades predictable.
+
+The default installation location is:
+
+`%LOCALAPPDATA%\Programs\JSS Software\XIV Authenticator`
+
+Application data is stored separately under:
+
+`%LOCALAPPDATA%\WindowsXIVAuthenticator`
+
+Uninstalling or upgrading the application should not automatically delete the user's authenticator vault.
+
+## Updating from version 1
+
+Version 1 stored the authenticator using Windows DPAPI.
+
+Version 2 migrates the existing authenticator into the new encrypted vault.
+
+The migration process:
+
+1. detects the existing version 1 authenticator;
+2. decrypts it using the original DPAPI mechanism;
+3. creates the version 2 AES-encrypted vault;
+4. reads the new vault back;
+5. verifies that the migrated secret matches the original;
+6. deletes the old version 1 authenticator file only after successful verification.
+
+## Building
+
+Requirements include:
+
+- Windows;
+- .NET 10 SDK;
+- Inno Setup 6 for installer creation.
+
+Build the solution:
 
 ```powershell
-git clone https://github.com/JoeSparkx/WindowsXIV-Authenticator.git
-cd WindowsXIV-Authenticator
+dotnet build .\WindowsXIVAuthenticator.slnx
 ```
 
-Build:
+Build the release installer:
 
 ```powershell
-dotnet build WindowsXIVAuthenticator.slnx
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\installer\build-release.ps1 -Version 2.0.0
 ```
 
-Run the normal interface:
+Release output is written to:
 
-```powershell
-dotnet run --project .\WindowsXIVAuthenticator
+`dist\`
+
+The release builder generates:
+
+- `WindowsXIVAuthenticator-Setup-<version>.exe`
+- `SHA256SUMS.txt`
+
+The installer includes both:
+
+- `WindowsXIVAuthenticator.exe`
+- `xiv-auth.exe`
+
+## Project structure
+
+```text
+WindowsXIV-Authenticator
+├── WindowsXIVAuthenticator
+│   └── WPF desktop application
+├── WindowsXIVAuthenticator.Core
+│   └── shared vault, security and TOTP functionality
+├── WindowsXIVAuthenticator.Cli
+│   └── xiv-auth command-line client
+├── installer
+│   └── release and Inno Setup tooling
+└── docs
 ```
-
-Test automatic launch mode:
-
-```powershell
-dotnet run --project .\WindowsXIVAuthenticator -- --launch
-```
-
-## Third-party components
-
-This project uses open-source libraries including:
-
-- Otp.NET
-- ZXing.Net
-- Google.Protobuf
-
-See the project file and NuGet metadata for current dependency versions and licences.
-
-## Project status
-
-Windows XIV Authenticator is currently under active development.
-
-Installer packages and public releases will be added once setup documentation, security review, packaging, and release testing are complete.
-
-## Disclaimer
-
-Windows XIV Authenticator is an unofficial community project.
-
-It is not affiliated with, endorsed by, or supported by Square Enix, Final Fantasy XIV, XIVLauncher, or Goatcorp.
-
-FINAL FANTASY XIV and related names and trademarks belong to their respective owners.
 
 ## Licence
 
-Windows XIV Authenticator is released under the MIT Licence.
+Windows XIV Authenticator is **source available**, not OSI open source.
 
-## JSS Software
+You are welcome to use the official application free of charge.
 
-Developed by **JSS Software**.
+You are also welcome to inspect and review the source.
+
+If you want to modify, fork, repackage, redistribute, or commercially use Windows XIV Authenticator itself, ask first.
+
+Independent provider DLLs, adapters, plugins, and integrations using the documented interface are permitted without prior approval, provided they do not contain or redistribute modified Windows XIV Authenticator code or binaries.
+
+See `LICENSE` for the complete terms.
+
+## Disclaimer
+
+Windows XIV Authenticator is an independent community project.
+
+It is not affiliated with, endorsed by, or sponsored by Square Enix, XIVLauncher, Dalamud, Goatcorp, Microsoft, or any password-manager/authenticator provider.
+
+Final Fantasy XIV and related names and trademarks belong to their respective owners.
+
+## Links
 
 Repository:
 
-https://github.com/JoeSparkx/WindowsXIV-Authenticator
+https://github.com/JoeSparkx-Software/WindowsXIV-Authenticator
 
-Copyright (c) 2026 JSS Software
+XIV Mods:
 
-## Other JSS Software projects
+https://xivmods.com/
 
-### XIV Mods
+Support development:
 
-**XIV Mods** is a curated catalogue of Final Fantasy XIV Dalamud plugins, repositories, guides and community resources.
-
-https://xivmods.com
-
-Discord:
-
-https://discord.xivmods.com
-
-GitHub:
-
-https://github.com/JoeSparkx
-
-XIV Mods is a separate community project and is not required to use Windows XIV Authenticator.
-
-## Attribution
-
-This project was originally created by Adam Crickett / JSS Software.
-
-You are welcome to modify, fork, redistribute, and adapt the project under the terms of the MIT Licence. Please retain the original copyright and licence notice.
+https://ko-fi.com/joesparkx

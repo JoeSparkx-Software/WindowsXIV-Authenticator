@@ -20,4 +20,8 @@
   <Resource Include="Assets\jss-logo.png" />
 </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WindowsXIVAuthenticator.Core\WindowsXIVAuthenticator.Core.csproj" />
+  </ItemGroup>
+
 </Project>

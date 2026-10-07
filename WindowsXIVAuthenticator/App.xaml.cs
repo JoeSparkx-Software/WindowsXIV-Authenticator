@@ -1,4 +1,5 @@
-﻿using WindowsXIVAuthenticator.Services;
+﻿﻿using WindowsXIVAuthenticator.Services;
+using WindowsXIVAuthenticator.Core.Services;
 
 namespace WindowsXIVAuthenticator;
 
@@ -8,6 +9,31 @@ public partial class App : Application
         StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        try
+        {
+            if (AuthenticatorMigrationService.MigrationRequired())
+            {
+                await AuthenticatorMigrationService.MigrateAsync();
+
+                MessageBox.Show(
+                    "Authenticator successfully migrated to the v2 TPM-backed vault.",
+                    "Authenticator migration",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Authenticator migration failed.\n\n{ex.Message}",
+                "Authenticator migration",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+
+            Shutdown();
+            return;
+        }
 
         if (e.Args.Any(arg =>
                 arg.Equals(
@@ -19,7 +45,9 @@ public partial class App : Application
             return;
         }
 
-        var mainWindow = new MainWindow();
+        var mainWindow =
+            new MainWindow();
+
         mainWindow.Show();
     }
 
@@ -27,7 +55,7 @@ public partial class App : Application
     {
         try
         {
-            if (!AuthenticatorStore.Exists())
+            if (!AuthenticatorVaultStore.Exists())
             {
                 MessageBox.Show(
                     "No authenticator account is configured.\n\n" +
@@ -38,17 +66,16 @@ public partial class App : Application
 
                 return;
             }
-            if (AppSettingsService.GetRequireWindowsHello())
-            {
-                var verified =
-                    await WindowsHelloService.VerifyAsync(
-                        "Verify your identity to launch Final Fantasy XIV");
 
-                if (!verified)
-                    return;
-            }
+            var verified =
+                await WindowsHelloService.VerifyAsync(
+                    "Verify your identity to launch Final Fantasy XIV");
+
+            if (!verified)
+                return;
+
             var secret =
-                AuthenticatorStore.GetSecret();
+                await AuthenticatorVaultStore.GetSecretAsync();
 
             if (string.IsNullOrWhiteSpace(secret))
             {
@@ -61,11 +88,9 @@ public partial class App : Application
                 return;
             }
 
-            var otp =
-                TotpService.GenerateCode(secret!);
-
             await XivLauncherService.LaunchAndSendOtpAsync(
-                () => TotpService.GenerateCode(secret));
+                () => TotpService.GenerateCode(
+                    secret));
         }
         catch (FileNotFoundException)
         {
