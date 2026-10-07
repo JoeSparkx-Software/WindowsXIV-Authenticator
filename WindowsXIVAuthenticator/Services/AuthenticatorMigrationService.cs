@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using WindowsXIVAuthenticator.Core.Services;
 
 namespace WindowsXIVAuthenticator.Services;
 

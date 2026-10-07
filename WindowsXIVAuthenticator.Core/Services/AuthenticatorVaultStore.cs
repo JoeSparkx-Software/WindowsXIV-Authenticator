@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 
-namespace WindowsXIVAuthenticator.Services;
+namespace WindowsXIVAuthenticator.Core.Services;
 
 public sealed class AuthenticatorVault
 {
@@ -18,8 +18,12 @@ public sealed class AuthenticatorVault
 
 public static class AuthenticatorVaultStore
 {
-    private static string VaultPath =>
-        AppSettingsService.DefaultVaultPath;
+private static readonly string VaultPath =
+    Path.Combine(
+        Environment.GetFolderPath(
+            Environment.SpecialFolder.LocalApplicationData),
+        "WindowsXIVAuthenticator",
+        "vault.json");
 
     public static bool Exists()
     {

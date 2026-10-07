@@ -1,6 +1,6 @@
 using Windows.Security.Credentials.UI;
 
-namespace WindowsXIVAuthenticator.Services;
+namespace WindowsXIVAuthenticator.Core.Services;
 
 public static class WindowsHelloService
 {

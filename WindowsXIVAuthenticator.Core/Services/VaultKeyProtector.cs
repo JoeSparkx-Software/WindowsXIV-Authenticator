@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace WindowsXIVAuthenticator.Services;
+namespace WindowsXIVAuthenticator.Core.Services;
 
 public sealed class ProtectedVaultKey
 {

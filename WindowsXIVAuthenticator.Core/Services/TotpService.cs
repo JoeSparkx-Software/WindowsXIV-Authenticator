@@ -1,6 +1,6 @@
 using OtpNet;
 
-namespace WindowsXIVAuthenticator.Services;
+namespace WindowsXIVAuthenticator.Core.Services;
 
 public static class TotpService
 {

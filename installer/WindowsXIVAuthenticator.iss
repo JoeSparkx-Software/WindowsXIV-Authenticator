@@ -1,11 +1,11 @@
 #ifndef AppVersion
-  #define AppVersion "0.1.0"
+  #define AppVersion "2.0.0"
 #endif
 
 #define AppName "XIV Authenticator"
 #define AppPublisher "JSS Software"
 #define AppExeName "WindowsXIVAuthenticator.exe"
-#define AppRepoUrl "https://github.com/JoeSparkx/WindowsXIV-Authenticator"
+#define AppRepoUrl "https://github.com/JoeSparkx-Software/WindowsXIV-Authenticator"
 
 [Setup]
 AppId={{BDB68EF5-6F8F-4D1A-90FC-6FE57B66895A}
@@ -30,6 +30,9 @@ WizardStyle=modern
 CloseApplications=yes
 RestartApplications=no
 LicenseFile=..\LICENSE
+UsePreviousAppDir=yes
+UsePreviousGroup=yes
+Uninstallable=yes
 
 [Files]
 Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

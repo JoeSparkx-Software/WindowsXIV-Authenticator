@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="WindowsXIVAuthenticator.Cli/WindowsXIVAuthenticator.Cli.csproj" />
+  <Project Path="WindowsXIVAuthenticator.Core/WindowsXIVAuthenticator.Core.csproj" />
   <Project Path="WindowsXIVAuthenticator/WindowsXIVAuthenticator.csproj" />
 </Solution>

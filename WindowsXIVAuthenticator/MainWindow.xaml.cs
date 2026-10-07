@@ -1,4 +1,5 @@
 ﻿using WindowsXIVAuthenticator.Services;
+using WindowsXIVAuthenticator.Core.Services;
 
 namespace WindowsXIVAuthenticator;
 
