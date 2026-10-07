@@ -27,17 +27,17 @@ This permission is intended to allow developers to build support for services su
 
 ### 3. Source Availability
 
-The source code may be viewed, reviewed, audited, studied, and used for educational or security-review purposes.
+The source code may be viewed, reviewed, audited, studied, and forked using GitHub's normal repository functionality.
 
-The availability of the source code does not grant permission to modify, fork, republish, repackage, or redistribute modified versions of Windows XIV Authenticator.
+Forking the repository does not grant permission to publish, redistribute, repackage, or release modified versions of Windows XIV Authenticator outside the rights already provided by GitHub's Terms of Service.
 
 ### 4. Modifications and Derivative Works
 
-You may not modify, fork, create derivative works from, or distribute modified versions of Windows XIV Authenticator without prior written permission from JSS Software / JoeSparkx.
+You may make changes in your own fork for personal development, testing, review, or contribution purposes.
 
-If you want to make changes, maintain a fork, contribute a substantial derivative work, or redistribute a modified build, ask first.
+If you want to publish, redistribute, repackage, release, or maintain a modified version or derivative build of Windows XIV Authenticator, please obtain prior written permission from JSS Software / JoeSparkx.
 
-Permission may be granted on a case-by-case basis.
+Pull requests and proposed changes back to the official repository are welcome and do not require separate permission.
 
 ### 5. Redistribution
 
@@ -81,6 +81,6 @@ Upon termination, you must stop distributing any affected copies or derivative w
 
 ### 11. Permission Requests
 
-For permission to modify, fork, redistribute, repackage, or commercially use Windows XIV Authenticator, contact the project maintainer through the official repository:
+For permission to publish, redistribute, repackage, release modified versions, maintain derivative builds, or commercially use Windows XIV Authenticator...
 
 https://github.com/JoeSparkx-Software/WindowsXIV-Authenticator
