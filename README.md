@@ -235,7 +235,7 @@ You are welcome to use the official application free of charge.
 
 You are also welcome to inspect and review the source.
 
-If you want to modify, fork, repackage, redistribute, or commercially use Windows XIV Authenticator itself, ask first.
+If you want to modify, repackage, redistribute, or commercially use Windows XIV Authenticator itself, ask first.
 
 Independent provider DLLs, adapters, plugins, and integrations using the documented interface are permitted without prior approval, provided they do not contain or redistribute modified Windows XIV Authenticator code or binaries.
 
